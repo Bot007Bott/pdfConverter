@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Image → PDF</title>
+
     <link rel="stylesheet" href="style.css" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
+
   <body>
     <div class="container">
       <header class="header">
@@ -14,88 +17,139 @@
         <p class="subtitle">Convert your images into a single PDF document</p>
       </header>
 
-      <!-- Drop Zone -->
-      <div class="drop-zone" id="dropZone">
-        <input
-          type="file"
-          id="fileInput"
-          multiple
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-          hidden
-        />
-        <div class="drop-zone-content">
-          <div class="drop-icon">📁</div>
-          <p class="drop-title">Drop your images here</p>
-          <p class="drop-sub">PNG, JPG and JPEG supported</p>
-          <button class="btn btn-choose" id="chooseBtn" type="button">
-            Choose Images
-          </button>
-        </div>
-      </div>
-
-      <!-- Image List -->
-      <div class="image-section" id="imageSection" hidden>
-        <div class="section-header">
-          <h2>Images <span class="count" id="countBadge">0</span></h2>
-          <button class="btn btn-clear" id="clearBtn" type="button">
-            Clear All
-          </button>
-        </div>
-        <ul class="image-list" id="imageList"></ul>
-      </div>
-
-      <!-- PDF Settings -->
-      <div class="settings-section" id="settingsSection" hidden>
-        <h2>PDF Settings</h2>
-        <div class="settings-grid">
-          <div class="setting">
-            <label for="pageSize">Page Size</label>
-            <select id="pageSize">
-              <option value="a4" selected>A4</option>
-              <option value="letter">Letter</option>
-              <option value="original">Original Image Size</option>
-            </select>
+      <main class="workspace">
+        <!-- LEFT: Upload -->
+        <section class="panel upload-panel">
+          <div class="panel-title">
+            <h2>Upload Images</h2>
           </div>
-          <div class="setting">
-            <label for="orientation">Orientation</label>
-            <select id="orientation">
-              <option value="auto" selected>Auto</option>
-              <option value="portrait">Portrait</option>
-              <option value="landscape">Landscape</option>
-            </select>
-          </div>
-          <div class="setting">
-            <label for="fitMode">Image Fit</label>
-            <select id="fitMode">
-              <option value="contain" selected>Fit to Page</option>
-              <option value="cover">Fill Page</option>
-              <option value="original">Original Size</option>
-            </select>
-          </div>
-          <div class="setting">
-            <label for="margin">Margin</label>
-            <select id="margin">
-              <option value="0">None</option>
-              <option value="10" selected>Small</option>
-              <option value="20">Medium</option>
-              <option value="40">Large</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
-      <!-- Preview -->
-      <div class="preview-section" id="previewSection" hidden>
-        <h2>Preview</h2>
-        <div class="preview-grid" id="previewGrid"></div>
-      </div>
+          <div class="drop-zone" id="dropZone">
+            <input
+              type="file"
+              id="fileInput"
+              multiple
+              accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+              hidden
+            />
 
-      <!-- Actions -->
-      <div class="actions" id="actionsSection" hidden>
-        <button class="btn btn-download" id="downloadBtn" type="button">
-          📥 Download PDF
-        </button>
-      </div>
+            <div class="drop-zone-content">
+              <div class="drop-icon">📁</div>
+
+              <p class="drop-title">Drop your images here</p>
+
+              <p class="drop-sub">PNG, JPG and JPEG supported</p>
+
+              <button class="btn btn-choose" id="chooseBtn" type="button">
+                Choose Images
+              </button>
+            </div>
+          </div>
+
+          <div class="upload-tip">
+            <strong>Tip:</strong> You can select multiple images at once. You
+            can also drag and drop them here.
+          </div>
+        </section>
+
+        <!-- MIDDLE: Images -->
+        <section class="panel image-section" id="imageSection" hidden>
+          <div class="section-header">
+            <h2>
+              Images
+              <span class="count" id="countBadge">0</span>
+            </h2>
+
+            <button class="btn btn-clear" id="clearBtn" type="button">
+              Clear All
+            </button>
+          </div>
+
+          <ul class="image-list" id="imageList"></ul>
+        </section>
+
+        <!-- RIGHT: Settings + Preview -->
+        <section class="panel right-panel">
+          <div class="settings-section" id="settingsSection" hidden>
+            <h2>PDF Settings</h2>
+
+            <div class="setting file-name-setting">
+              <label for="fileName">PDF File Name</label>
+
+              <input
+                type="text"
+                id="fileName"
+                placeholder="Enter PDF file name"
+                value="images"
+                maxlength="100"
+                autocomplete="off"
+              />
+
+              <small>The ".pdf" extension will be added automatically.</small>
+            </div>
+
+            <div class="settings-grid">
+              <div class="setting">
+                <label for="pageSize">Page Size</label>
+
+                <select id="pageSize">
+                  <option value="a4" selected>A4</option>
+                  <option value="letter">Letter</option>
+                  <option value="original">Original Image Size</option>
+                </select>
+              </div>
+
+              <div class="setting">
+                <label for="orientation">Orientation</label>
+
+                <select id="orientation">
+                  <option value="auto" selected>Auto</option>
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+
+              <div class="setting">
+                <label for="fitMode">Image Fit</label>
+
+                <select id="fitMode">
+                  <option value="contain" selected>Fit to Page</option>
+                  <option value="cover">Fill Page</option>
+                  <option value="original">Original Size</option>
+                </select>
+              </div>
+
+              <div class="setting">
+                <label for="margin">Margin</label>
+
+                <select id="margin">
+                  <option value="0" selected>None</option>
+                  <option value="10">Small</option>
+                  <option value="20">Medium</option>
+                  <option value="40">Large</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-section" id="previewSection" hidden>
+            <h2>Preview</h2>
+            <div class="preview-grid" id="previewGrid"></div>
+          </div>
+
+          <div class="actions" id="actionsSection" hidden>
+            <button class="btn btn-download" id="downloadBtn" type="button">
+              📥 Download PDF
+            </button>
+          </div>
+
+          <div class="empty-settings" id="emptySettings">
+            <div class="empty-icon">⚙️</div>
+            <h3>PDF Settings</h3>
+            <p>Upload images to configure your PDF and preview the result.</p>
+          </div>
+        </section>
+      </main>
     </div>
 
     <script src="script.js"></script>
