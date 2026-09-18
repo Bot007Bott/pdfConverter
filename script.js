@@ -30,6 +30,7 @@
   var actionsSection = document.getElementById("actionsSection");
 
   var downloadBtn = document.getElementById("downloadBtn");
+  var downloadHint = document.getElementById("downloadHint");
 
   // Settings
   var fileNameEl = document.getElementById("fileName");
@@ -41,6 +42,23 @@
   var fitModeEl = document.getElementById("fitMode");
 
   var marginEl = document.getElementById("margin");
+
+  // =========================
+  // PLATFORM DETECTION
+  // =========================
+
+  // iPadOS reports itself as "MacIntel" in the UA string, so a touch-point
+  // check is needed to tell a real Mac apart from an iPad.
+  function isIOS() {
+    return (
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+    );
+  }
+
+  if (isIOS()) {
+    downloadHint.hidden = false;
+  }
 
   // =========================
   // EVENTS
@@ -620,11 +638,11 @@
       }
 
       // =========================
-      // SAVE
+      // SAVE / SHARE
       // =========================
 
       if (doc && addedPages > 0) {
-        doc.save(fileName + ".pdf");
+        await saveOrSharePDF(doc, fileName);
       } else {
         alert("No valid images were available to create the PDF.");
       }
@@ -639,6 +657,62 @@
 
       downloadBtn.textContent = "📥 Download PDF";
     }
+  }
+
+  // =========================
+  // SAVE OR SHARE
+  // =========================
+
+  // Desktop and Android browsers can save a blob straight to disk via a
+  // hidden <a download> click (what jsPDF's doc.save() does internally).
+  // iOS Safari does not reliably support that trick — instead of saving,
+  // it just navigates the tab to the raw PDF and renders it inline
+  // (which, since every page here is a full-page image, looks like it's
+  // "just showing the pictures"). The fix on iOS is to hand the file to
+  // the native Share Sheet via the Web Share API, which has a one-tap
+  // "Save to Files" action built in.
+  async function saveOrSharePDF(doc, fileName) {
+    if (isIOS() && navigator.canShare && navigator.share) {
+      var blob = doc.output("blob");
+      var file = new File([blob], fileName + ".pdf", {
+        type: "application/pdf",
+      });
+
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: fileName + ".pdf",
+          });
+
+          return;
+        } catch (shareError) {
+          // User cancelled the share sheet — treat as a normal cancel,
+          // no need to also fall through to opening a new tab.
+          if (shareError && shareError.name === "AbortError") {
+            return;
+          }
+
+          console.warn("Share failed, falling back to opening PDF:", shareError);
+        }
+      }
+
+      // Web Share (with files) isn't available — fall back to opening
+      // the PDF in Safari's built-in viewer, where the user can tap the
+      // Share icon themselves and choose "Save to Files".
+      var blobUrl = URL.createObjectURL(blob);
+
+      window.open(blobUrl, "_blank");
+
+      setTimeout(function () {
+        URL.revokeObjectURL(blobUrl);
+      }, 60000);
+
+      return;
+    }
+
+    // Desktop / Android — normal direct download.
+    doc.save(fileName + ".pdf");
   }
 
   // =========================

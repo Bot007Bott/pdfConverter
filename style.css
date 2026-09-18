@@ -16,6 +16,10 @@ body {
   color: #1a1a2e;
   min-height: 100vh;
   padding: 18px;
+  /* Keep content clear of the iPhone notch / home indicator */
+  padding-left: max(18px, env(safe-area-inset-left));
+  padding-right: max(18px, env(safe-area-inset-right));
+  padding-bottom: max(18px, env(safe-area-inset-bottom));
 }
 
 .container {
@@ -140,6 +144,8 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  /* Comfortable tap target on touch devices */
+  min-height: 44px;
 }
 
 .btn-choose {
@@ -180,6 +186,14 @@ body {
   cursor: not-allowed;
 }
 
+.download-hint {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  color: #888;
+  line-height: 1.4;
+  text-align: center;
+}
+
 /* Image list */
 .image-section {
   display: flex;
@@ -213,6 +227,8 @@ body {
   padding-right: 4px;
   min-height: 0;
   flex: 1;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 .image-list::-webkit-scrollbar,
@@ -281,6 +297,9 @@ body {
   padding: 5px;
   border-radius: 4px;
   transition: background 0.2s;
+  /* Comfortable tap target on touch devices, even though the glyph is small */
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .icon-btn:hover {
@@ -305,6 +324,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  -webkit-overflow-scrolling: touch;
 }
 
 .settings-section,
@@ -385,6 +405,9 @@ body {
   font-size: 0.9rem;
   background: #fff;
   cursor: pointer;
+  /* iOS Safari adds heavy default select styling — normalize it */
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .setting select:focus {
@@ -406,6 +429,7 @@ body {
   max-height: 290px;
   overflow-y: auto;
   padding-right: 3px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .preview-page {
@@ -491,6 +515,9 @@ body {
 @media (max-width: 700px) {
   body {
     padding: 14px;
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
   }
 
   .header {
@@ -517,15 +544,15 @@ body {
   }
 
   .upload-panel {
-    min-height: 440px;
+    min-height: 0;
   }
 
   .drop-zone {
-    min-height: 350px;
+    min-height: 260px;
   }
 
   .image-section {
-    min-height: 430px;
+    min-height: 0;
   }
 
   .right-panel {
@@ -543,6 +570,11 @@ body {
   .image-item {
     flex-wrap: nowrap;
   }
+
+  /* Full-width tap targets are easier to hit one-handed */
+  .btn-choose {
+    width: 100%;
+  }
 }
 
 /* Small phones */
@@ -556,7 +588,12 @@ body {
     gap: 0;
   }
 
-  .icon-btn {
-    padding: 4px;
+  .drop-icon {
+    font-size: 2.8rem;
+  }
+
+  .drop-zone {
+    min-height: 220px;
+    padding: 20px 12px;
   }
 }
