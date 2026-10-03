@@ -32,6 +32,10 @@
   var downloadBtn = document.getElementById("downloadBtn");
   var downloadHint = document.getElementById("downloadHint");
 
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightboxImg");
+  var lightboxClose = document.getElementById("lightboxClose");
+
   // Settings
   var fileNameEl = document.getElementById("fileName");
 
@@ -59,6 +63,35 @@
   if (isIOS()) {
     downloadHint.hidden = false;
   }
+
+  // =========================
+  // LIGHTBOX
+  // =========================
+
+  function openLightbox(url) {
+    lightboxImg.src = url;
+    lightbox.hidden = false;
+  }
+
+  function closeLightbox() {
+    lightbox.hidden = true;
+    lightboxImg.src = "";
+  }
+
+  lightboxClose.addEventListener("click", closeLightbox);
+
+  // Clicking the dark backdrop (but not the image itself) also closes it
+  lightbox.addEventListener("click", function (event) {
+    if (event.target === lightbox) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !lightbox.hidden) {
+      closeLightbox();
+    }
+  });
 
   // =========================
   // EVENTS
@@ -125,6 +158,16 @@
   fitModeEl.addEventListener("change", renderPreview);
 
   marginEl.addEventListener("change", renderPreview);
+
+  // Preview grid is only re-filled (innerHTML), never replaced, so this
+  // delegated listener can be attached once up front.
+  previewGrid.addEventListener("click", function (event) {
+    var img = event.target.closest("img");
+
+    if (img) {
+      openLightbox(img.src);
+    }
+  });
 
   // =========================
   // FILE HANDLING
@@ -263,7 +306,7 @@
       li.innerHTML =
         '<img src="' +
         escapeAttr(item.url) +
-        '" alt="">' +
+        '" alt="" class="thumb">' +
         '<div class="image-info">' +
         '<div class="image-name">' +
         escapeHTML(item.name) +
@@ -306,6 +349,16 @@
     }
 
     imageList.onclick = function (event) {
+      // Tapping the thumbnail itself opens the lightbox instead of
+      // triggering a move/delete action.
+      var thumb = event.target.closest("img.thumb");
+
+      if (thumb) {
+        openLightbox(thumb.src);
+
+        return;
+      }
+
       var button = event.target.closest("[data-action]");
 
       if (!button || button.disabled) {
@@ -693,7 +746,10 @@
             return;
           }
 
-          console.warn("Share failed, falling back to opening PDF:", shareError);
+          console.warn(
+            "Share failed, falling back to opening PDF:",
+            shareError,
+          );
         }
       }
 

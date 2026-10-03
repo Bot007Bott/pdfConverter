@@ -262,6 +262,8 @@ body {
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;
+  /* Hints that the thumbnail can be opened full-size */
+  cursor: zoom-in;
 }
 
 .image-info {
@@ -445,6 +447,8 @@ body {
   max-height: 160px;
   object-fit: contain;
   border-radius: 4px;
+  /* Hints that the page preview can be opened full-size */
+  cursor: zoom-in;
 }
 
 .preview-label {
@@ -482,6 +486,47 @@ body {
 /* Hidden state */
 [hidden] {
   display: none !important;
+}
+
+/* Lightbox: click a thumbnail or page preview to see it full-size */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+  z-index: 1000;
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Tablet */
